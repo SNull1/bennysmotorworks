@@ -1,0 +1,558 @@
+<!DOCTYPE html>
+<html lang="fr">
+<head>
+    <meta charset="UTF-8">
+    <meta name="viewport" content="width=device-width, initial-scale=1.0">
+    <title>Benny's Motorworks - Fratworld</title>
+    <style>
+        :root {
+            --bennys-red: #d32f2f;
+            --bennys-red-hover: #b71c1c;
+            --dark-bg: #121212;
+            --panel-bg: #1e1e1e;
+            --card-bg: #252525;
+            --border-color: #333333;
+            --text-light: #ffffff;
+            --text-muted: #aaaaaa;
+            --accent-green: #4caf50;
+        }
+
+        /* Base Styles */
+        body { font-family: 'Segoe UI', Tahoma, Geneva, Verdana, sans-serif; background-color: var(--dark-bg); color: var(--text-light); margin: 0; padding: 20px; line-height: 1.5; }
+        h1, h2, h3 { color: var(--bennys-red); margin-top: 0; }
+        .container { max-width: 1200px; margin: auto; background: var(--panel-bg); padding: 30px; border-radius: 8px; border: 1px solid var(--border-color); }
+        .hidden { display: none !important; }
+
+        /* Forms & Inputs */
+        input[type="text"], input[type="password"], input[type="number"], select { width: 100%; padding: 12px; margin: 8px 0 20px 0; border: 1px solid var(--border-color); border-radius: 6px; background: var(--dark-bg); color: var(--text-light); box-sizing: border-box; font-size: 14px; transition: border-color 0.2s; }
+        input:focus, select:focus { outline: none; border-color: var(--bennys-red); }
+
+        /* Buttons */
+        button { width: 100%; padding: 12px; background-color: var(--bennys-red); color: white; font-weight: bold; font-size: 14px; cursor: pointer; border: none; border-radius: 6px; transition: background-color 0.2s; text-transform: uppercase; letter-spacing: 1px; }
+        button:hover { background-color: var(--bennys-red-hover); }
+        button:disabled { background-color: #555; cursor: not-allowed; }
+        .btn-danger { background-color: #7f0000; }
+        .btn-danger:hover { background-color: #5c0000; }
+        .btn-small { width: auto; padding: 8px 15px; font-size: 12px; text-transform: none; }
+
+        /* Layout */
+        .flex-row { display: flex; gap: 25px; flex-wrap: wrap; align-items: flex-start; }
+        .col { flex: 1; min-width: 320px; }
+        .card { background: var(--card-bg); padding: 20px; border-radius: 8px; margin-bottom: 20px; border: 1px solid var(--border-color); border-left: 5px solid var(--bennys-red); }
+
+        /* Tables */
+        table { width: 100%; border-collapse: collapse; margin-top: 15px; background: var(--dark-bg); border-radius: 6px; overflow: visible; }
+        th, td { padding: 12px 15px; text-align: left; border-bottom: 1px solid var(--border-color); }
+        th { background-color: #1a1a1a; color: var(--bennys-red); font-weight: bold; }
+        tr:hover td { background-color: #222; }
+
+        /* Facture Result Box */
+        .invoice-box { background: var(--dark-bg); padding: 25px; border: 2px dashed var(--border-color); border-left: 5px solid var(--accent-green); font-size: 1.1em; }
+        .highlight { color: var(--accent-green); font-weight: bold; font-size: 1.2em; }
+        .commission-text { color: #03a9f4; font-weight: bold; }
+        hr { border: 0; height: 1px; background: var(--border-color); margin: 20px 0; }
+
+        /* --- CUSTOM CHECKBOXES --- */
+        .custom-checkbox { display: flex; align-items: center; position: relative; padding-left: 35px; margin-bottom: 15px; cursor: pointer; font-size: 15px; user-select: none; color: var(--text-light); }
+        .custom-checkbox input { position: absolute; opacity: 0; cursor: pointer; height: 0; width: 0; }
+        .checkmark { position: absolute; top: 50%; left: 0; transform: translateY(-50%); height: 22px; width: 22px; background-color: var(--dark-bg); border: 2px solid var(--border-color); border-radius: 4px; transition: all 0.2s ease; }
+        .custom-checkbox:hover input ~ .checkmark { border-color: var(--bennys-red); }
+        .custom-checkbox input:checked ~ .checkmark { background-color: var(--bennys-red); border-color: var(--bennys-red); }
+        .checkmark:after { content: ""; position: absolute; display: none; }
+        .custom-checkbox input:checked ~ .checkmark:after { display: block; }
+        .custom-checkbox .checkmark:after { left: 6px; top: 2px; width: 6px; height: 11px; border: solid white; border-width: 0 3px 3px 0; transform: rotate(45deg); }
+
+        .inline-inputs { display: flex; gap: 10px; margin-bottom: 10px; }
+        .inline-inputs input { margin: 0; }
+        .quantity-row { display: flex; align-items: center; gap: 15px; margin-bottom: 15px; background: var(--dark-bg); padding: 10px 15px; border-radius: 6px; border: 1px solid var(--border-color); }
+        .quantity-row input { width: 80px; margin: 0; text-align: center; }
+    </style>
+</head>
+<body>
+
+<div class="container">
+    <div style="text-align: center; margin-bottom: 30px;">
+        <h1 style="font-size: 2.5em; letter-spacing: 2px;">🔧 BENNY'S MOTORWORKS 🔧</h1>
+        <p style="color: var(--text-muted); font-size: 1.1em;">Système de Comptabilité - Fratworld</p>
+    </div>
+
+    <div id="login-screen" class="card" style="max-width: 400px; margin: 0 auto; border-left: none; border-top: 5px solid var(--bennys-red);">
+        <h2 style="text-align: center; margin-bottom: 20px;">Connexion Employé</h2>
+        <input type="text" id="login-user" placeholder="Nom d'utilisateur">
+        <input type="password" id="login-pass" placeholder="Mot de passe">
+        <button id="btn-login" onclick="login()" disabled>Connexion à Firebase...</button>
+    </div>
+
+    <div id="dashboard" class="hidden">
+        
+        <div class="flex-row" style="justify-content: space-between; align-items: center; border-bottom: 1px solid var(--border-color); padding-bottom: 15px; margin-bottom: 25px;">
+            <div>
+                <div style="font-size: 1.1em;">
+                    Connecté en tant que: <strong id="logged-user" style="color: var(--bennys-red);"></strong> 
+                    (<span id="logged-grade" style="color: var(--text-muted);"></span>)
+                </div>
+                <div style="font-size: 0.9em; color: var(--text-muted); margin-top: 5px; background: rgba(0,0,0,0.3); padding: 5px 10px; border-radius: 4px; display: inline-block;">
+                    💼 Mes Ventes: <strong id="my-total-sales" style="color: white;">0</strong>$ | 
+                    💰 Mes Commissions: <strong id="my-total-commission" class="commission-text">0</strong>$
+                </div>
+            </div>
+            <button class="btn-small" onclick="logout()">Déconnexion</button>
+        </div>
+
+        <div class="flex-row">
+            <div class="col card">
+                <h2>Nouvelle Facture</h2>
+                
+                <h3>1. Réparations</h3>
+                <label class="custom-checkbox">
+                    <input type="checkbox" id="rep-engine" value="2000" onchange="calculateInvoice()">
+                    <span class="checkmark"></span>
+                    Moteur (Prix usine: 2000$)
+                </label>
+                <label class="custom-checkbox">
+                    <input type="checkbox" id="rep-body" value="800" onchange="calculateInvoice()">
+                    <span class="checkmark"></span>
+                    Carrosserie (Prix usine: 800$)
+                </label>
+                <label class="custom-checkbox">
+                    <input type="checkbox" id="rep-wheel" value="600" onchange="calculateInvoice()">
+                    <span class="checkmark"></span>
+                    Roue (Prix usine: 600$)
+                </label>
+                
+                <div class="quantity-row">
+                    <label for="rep-kit-qty" style="flex: 1; font-size: 15px;">Kits de Réparation (Fixe: 6500$/u) :</label>
+                    <input type="number" id="rep-kit-qty" min="0" value="0" oninput="calculateInvoice()">
+                </div>
+
+                <h3 style="margin-top: 25px;">2. Customs (Modifications)</h3>
+                <div id="customs-list" style="margin-bottom: 15px; padding-left: 10px; border-left: 2px solid var(--border-color);"></div>
+                
+                <div class="inline-inputs">
+                    <input type="text" id="custom-name" placeholder="Nom de la modif" style="flex: 2;">
+                    <input type="number" id="custom-price" placeholder="Prix Usine" style="flex: 1;">
+                </div>
+                <button class="btn-small" onclick="addCustom()">+ Ajouter Modification</button>
+
+                <h3 style="margin-top: 25px;">3. Partenariat (Réduction Répa)</h3>
+                <select id="partner-discount" onchange="calculateInvoice()">
+                    </select>
+            </div>
+
+            <div class="col card invoice-box">
+                <h2>Total de la Facture</h2>
+                <div style="color: var(--text-muted); margin-bottom: 15px;">
+                    <p style="margin: 5px 0;">Coût Usine (Customs): <span id="res-usine-custom" style="color: #fff;">0</span>$</p>
+                    <p style="margin: 5px 0;">Coût Usine (Toutes Réparations): <span id="res-usine-rep" style="color: #fff;">0</span>$</p>
+                </div>
+                <hr>
+                <div style="margin-bottom: 20px;">
+                    <p style="margin: 5px 0;">Prix Client: <span id="res-client-custom">0</span>$</p>
+                    <p style="margin: 5px 0;">Prix Client: <span id="res-client-rep-base">0</span>$</p>
+                    <p style="margin: 5px 0;">Prix Client: <span id="res-client-kits">0</span>$</p>
+                </div>
+                <div style="background: var(--panel-bg); padding: 15px; border-radius: 6px; border: 1px solid var(--border-color);">
+                    <h3 style="margin: 0 0 10px 0; color: white;">
+                        TOTAL À PAYER CLIENT: <span id="res-total-client" class="highlight">0</span>$
+                    </h3>
+                    <p style="margin: 0; font-size: 0.9em;">
+                        Votre Commission (<span id="res-commission-rate">0</span>%): 
+                        <span id="res-commission" class="commission-text">0</span>$
+                    </p>
+                </div>
+                <button onclick="saveInvoice()" style="margin-top: 20px; background-color: var(--accent-green);">Enregistrer la vente</button>
+            </div>
+        </div>
+
+        <div id="admin-panel" class="hidden" style="margin-top: 40px;">
+            <h2>Panel Direction (Administrateur)</h2>
+            <div class="flex-row">
+                <div class="col card">
+                    <h3>Créer un Employé</h3>
+                    <input type="text" id="new-user" placeholder="Nom d'utilisateur">
+                    <input type="text" id="new-pass" placeholder="Mot de passe">
+                    <select id="new-grade">
+                        <option value="Mécano">Mécano (30% comm)</option>
+                        <option value="Chef Mécano">Chef Mécano (40% comm)</option>
+                        <option value="Assistant Direction">Assistant Direction (50% comm)</option>
+                        <option value="Direction">Direction (60% comm)</option>
+                    </select>
+                    <button onclick="createUser()">Créer le compte</button>
+                </div>
+
+                <div class="col card">
+                    <h3>Gestion Partenariats</h3>
+                    <div class="inline-inputs">
+                        <input type="text" id="new-partner-name" placeholder="Nom (ex: LSPD)" style="flex: 2;">
+                        <input type="number" id="new-partner-discount" placeholder="% (ex: 15)" style="flex: 1;">
+                    </div>
+                    <button class="btn-small" onclick="addPartner()" style="width:100%; margin-bottom: 10px;">Ajouter / Modifier</button>
+                    
+                    <div style="overflow-x:auto;">
+                        <table style="font-size: 13px;">
+                            <thead>
+                                <tr><th>Nom</th><th>Réd.</th><th>Action</th></tr>
+                            </thead>
+                            <tbody id="partners-table"></tbody>
+                        </table>
+                    </div>
+                </div>
+
+                <div class="col card" style="flex: 2;">
+                    <h3>Gestion des Employés & Stats</h3>
+                    <div style="overflow-x:auto;">
+                        <table>
+                            <thead>
+                                <tr><th>Nom</th><th>Grade</th><th>Ventes Tot.</th><th>Commission</th><th>Action</th></tr>
+                            </thead>
+                            <tbody id="employees-table"></tbody>
+                        </table>
+                    </div>
+                </div>
+            </div>
+        </div>
+    </div>
+</div>
+
+<script type="module">
+    import { initializeApp } from "https://www.gstatic.com/firebasejs/10.12.2/firebase-app.js";
+    import { getDatabase, ref, set, onValue } from "https://www.gstatic.com/firebasejs/10.12.2/firebase-database.js";
+
+    // 🔴 REMPLACE CECI PAR TA CONFIG FIREBASE
+    const firebaseConfig = {
+        apiKey: "AIzaSyBFA6fOocd_yXSNxkFJK8ysBfz2-oU36Is",
+        authDomain: "bennyy-96dcf.firebaseapp.com",
+        projectId: "bennyy-96dcf",
+        storageBucket: "bennyy-96dcf.firebasestorage.app",
+        messagingSenderId: "159106683564",
+        appId: "1:159106683564:web:4d8eaaf33369840dcf4509"
+    };
+
+    const app = initializeApp(firebaseConfig);
+    const database = getDatabase(app);
+    const dbRef = ref(database, 'bennys_fratworld');
+
+    const defaultData = {
+        users: [
+            { username: "patron", password: "123", role: "admin", grade: "Direction", stats: { sales: 0, commission: 0 } },
+            { username: "employe1", password: "123", role: "user", grade: "Mécano", stats: { sales: 0, commission: 0 } }
+        ],
+        gradesCommissions: {
+            "Mécano": 0.30,
+            "Chef Mécano": 0.40,
+            "Assistant Direction": 0.50,
+            "Direction": 0.60
+        },
+        partners: [
+            { name: "LSPD", discount: 10 },
+            { name: "EMS", discount: 15 },
+            { name: "Gouvernement", discount: 20 }
+        ]
+    };
+
+    const gradesList = ["Mécano", "Chef Mécano", "Assistant Direction", "Direction"];
+
+    let db = null;
+    let currentUser = null;
+    let currentCustoms = [];
+
+    // --- SYNCHRONISATION EN TEMPS RÉEL FIREBASE ---
+    onValue(dbRef, (snapshot) => {
+        const data = snapshot.val();
+        if (data) {
+            db = data;
+        } else {
+            // Si la base de données est vide (premier lancement), on la remplit
+            db = defaultData;
+            set(dbRef, defaultData);
+        }
+
+        // Débloquer le bouton de login quand Firebase est prêt
+        const loginBtn = document.getElementById('btn-login');
+        if(loginBtn) {
+            loginBtn.innerText = "Se Connecter";
+            loginBtn.disabled = false;
+        }
+
+        // Si quelqu'un est connecté, on rafraîchit son affichage instantanément
+        if (currentUser) {
+            // Mise à jour de l'utilisateur actuel au cas où un admin a changé son grade ou ses stats
+            const updatedUser = db.users.find(u => u.username === currentUser.username);
+            if(updatedUser) {
+                currentUser = updatedUser;
+                document.getElementById('logged-grade').innerText = currentUser.grade;
+                document.getElementById('res-commission-rate').innerText = (db.gradesCommissions[currentUser.grade] * 100);
+                updateUserStatsDisplay();
+                calculateInvoice(); // Recalculer au cas où le grade a changé
+            }
+
+            renderPartnerSelect(); // Rafraîchit les partenariats en temps réel
+
+            // Mettre à jour les panneaux admin en direct
+            if (currentUser.role === 'admin' || currentUser.grade === 'Assistant Direction') {
+                document.getElementById('admin-panel').classList.remove('hidden');
+                renderAdminTable();
+                renderAdminPartnersTable();
+            } else {
+                document.getElementById('admin-panel').classList.add('hidden');
+            }
+        }
+    });
+
+    function saveDB() {
+        // Envoie les données à Firebase
+        set(dbRef, db);
+    }
+
+    // --- ATTACHEMENT DES FONCTIONS À WINDOW (Requis car on est dans un <script type="module">) ---
+    window.login = login;
+    window.logout = logout;
+    window.calculateInvoice = calculateInvoice;
+    window.saveInvoice = saveInvoice;
+    window.addCustom = addCustom;
+    window.createUser = createUser;
+    window.resetUserStats = resetUserStats;
+    window.changeUserGrade = changeUserGrade;
+    window.addPartner = addPartner;
+    window.deletePartner = deletePartner;
+
+    // --- SYSTEME DE CONNEXION ---
+    function login() {
+        if (!db) return alert("Base de données non chargée.");
+        
+        const user = document.getElementById('login-user').value;
+        const pass = document.getElementById('login-pass').value;
+        const foundUser = db.users.find(u => u.username === user && u.password === pass);
+        
+        if (foundUser) {
+            currentUser = foundUser;
+            document.getElementById('login-screen').classList.add('hidden');
+            document.getElementById('dashboard').classList.remove('hidden');
+            
+            document.getElementById('logged-user').innerText = currentUser.username;
+            document.getElementById('logged-grade').innerText = currentUser.grade;
+            document.getElementById('res-commission-rate').innerText = (db.gradesCommissions[currentUser.grade] * 100);
+
+            renderPartnerSelect();
+            updateUserStatsDisplay();
+            calculateInvoice();
+
+            if (currentUser.role === 'admin' || currentUser.grade === 'Assistant Direction') {
+                document.getElementById('admin-panel').classList.remove('hidden');
+                renderAdminTable();
+                renderAdminPartnersTable();
+            }
+        } else {
+            alert("Identifiants incorrects !");
+        }
+    }
+
+    function logout() {
+        currentUser = null;
+        currentCustoms = [];
+        document.getElementById('dashboard').classList.add('hidden');
+        document.getElementById('login-screen').classList.remove('hidden');
+        document.getElementById('login-user').value = '';
+        document.getElementById('login-pass').value = '';
+        resetForm();
+    }
+
+    function updateUserStatsDisplay() {
+        if (!currentUser) return;
+        const user = db.users.find(u => u.username === currentUser.username);
+        document.getElementById('my-total-sales').innerText = user.stats.sales.toFixed(0);
+        document.getElementById('my-total-commission').innerText = user.stats.commission.toFixed(0);
+    }
+
+    // --- LOGIQUE FACTURE ---
+    function addCustom() {
+        const name = document.getElementById('custom-name').value;
+        const price = parseFloat(document.getElementById('custom-price').value);
+        if (!name || isNaN(price) || price <= 0) return alert("Infos custom invalides");
+
+        currentCustoms.push({ name, price });
+        const list = document.getElementById('customs-list');
+        list.innerHTML += `<div style="font-size: 14px; margin-bottom: 5px; color: var(--text-muted);">- <strong style="color: white;">${name}</strong>: ${price}$ (Usine)</div>`;
+        
+        document.getElementById('custom-name').value = '';
+        document.getElementById('custom-price').value = '';
+        calculateInvoice();
+    }
+
+    function calculateInvoice() {
+        let usineRepStandard = 0;
+        ['rep-engine', 'rep-body', 'rep-wheel'].forEach(id => {
+            const cb = document.getElementById(id);
+            if(cb.checked) usineRepStandard += parseFloat(cb.value);
+        });
+
+        const discountSelect = document.getElementById('partner-discount');
+        const discount = discountSelect ? parseFloat(discountSelect.value) : 0;
+        const clientRepStandard = (usineRepStandard * 1.5) * (1 - discount);
+
+        const kitQty = parseInt(document.getElementById('rep-kit-qty').value) || 0;
+        const kitPriceTotal = kitQty * 6500;
+
+        const usineRepTotal = usineRepStandard + kitPriceTotal;
+        const clientRepTotal = clientRepStandard + kitPriceTotal; 
+
+        let usineCustom = 0;
+        currentCustoms.forEach(c => usineCustom += c.price);
+        const clientCustom = usineCustom * 1.5;
+
+        const totalClient = clientRepTotal + clientCustom;
+        let agentCut = 0;
+        
+        if (currentUser) {
+            const gradeCommission = db.gradesCommissions[currentUser.grade];
+            agentCut = totalClient * gradeCommission;
+        }
+
+        document.getElementById('res-usine-rep').innerText = usineRepTotal.toFixed(0);
+        document.getElementById('res-client-rep-base').innerText = clientRepStandard.toFixed(0);
+        document.getElementById('res-client-kits').innerText = kitPriceTotal.toFixed(0);
+        
+        document.getElementById('res-usine-custom').innerText = usineCustom.toFixed(0);
+        document.getElementById('res-client-custom').innerText = clientCustom.toFixed(0);
+        
+        document.getElementById('res-total-client').innerText = totalClient.toFixed(0);
+        document.getElementById('res-commission').innerText = agentCut.toFixed(0);
+    }
+
+    function saveInvoice() {
+        const totalClient = parseFloat(document.getElementById('res-total-client').innerText);
+        const commission = parseFloat(document.getElementById('res-commission').innerText);
+
+        if (totalClient <= 0) return alert("La facture est vide ! Rien à enregistrer.");
+
+        const userIndex = db.users.findIndex(u => u.username === currentUser.username);
+        db.users[userIndex].stats.sales += totalClient;
+        db.users[userIndex].stats.commission += commission;
+        
+        saveDB();
+        alert(`Vente enregistrée ! Tu as gagné ${commission.toFixed(0)}$ de commission.`);
+        resetForm();
+    }
+
+    function resetForm() {
+        currentCustoms = [];
+        document.getElementById('customs-list').innerHTML = '';
+        ['rep-engine', 'rep-body', 'rep-wheel'].forEach(id => document.getElementById(id).checked = false);
+        document.getElementById('rep-kit-qty').value = "0";
+        document.getElementById('partner-discount').value = "0";
+        calculateInvoice();
+    }
+
+    // --- PANEL ADMINISTRATION : PARTENARIATS ---
+    function renderPartnerSelect() {
+        const select = document.getElementById('partner-discount');
+        const currentValue = select.value; // Garder la sélection actuelle si possible
+        
+        select.innerHTML = '<option value="0">Aucun partenariat (0%)</option>';
+        db.partners.forEach(p => {
+            const floatValue = p.discount / 100;
+            const isSelected = (currentValue == floatValue) ? "selected" : "";
+            select.innerHTML += `<option value="${floatValue}" ${isSelected}>${p.name} (${p.discount}%)</option>`;
+        });
+    }
+
+    function addPartner() {
+        const name = document.getElementById('new-partner-name').value.trim();
+        const discount = parseFloat(document.getElementById('new-partner-discount').value);
+
+        if (!name || isNaN(discount) || discount < 0 || discount > 100) return alert("Infos invalides");
+
+        const existingIndex = db.partners.findIndex(p => p.name.toLowerCase() === name.toLowerCase());
+        if (existingIndex >= 0) db.partners[existingIndex].discount = discount;
+        else db.partners.push({ name, discount });
+
+        saveDB();
+        document.getElementById('new-partner-name').value = '';
+        document.getElementById('new-partner-discount').value = '';
+    }
+
+    function deletePartner(name) {
+        if(confirm(`Supprimer le partenariat avec ${name} ?`)) {
+            db.partners = db.partners.filter(p => p.name !== name);
+            saveDB();
+        }
+    }
+
+    function renderAdminPartnersTable() {
+        const tbody = document.getElementById('partners-table');
+        tbody.innerHTML = '';
+        db.partners.forEach(p => {
+            tbody.innerHTML += `<tr>
+                <td><strong>${p.name}</strong></td>
+                <td style="color: var(--accent-green);">${p.discount}%</td>
+                <td><button class="btn-small btn-danger" onclick="deletePartner('${p.name}')">X</button></td>
+            </tr>`;
+        });
+    }
+
+    // --- PANEL ADMINISTRATION : EMPLOYES ---
+    function createUser() {
+        const user = document.getElementById('new-user').value;
+        const pass = document.getElementById('new-pass').value;
+        const grade = document.getElementById('new-grade').value;
+        const role = (grade === 'Direction' || grade === 'Assistant Direction') ? 'admin' : 'user';
+
+        if (!user || !pass) return alert("Remplissez les champs");
+        if (db.users.find(u => u.username === user)) return alert("Ce nom d'utilisateur existe déjà !");
+
+        db.users.push({ username: user, password: pass, role: role, grade: grade, stats: { sales: 0, commission: 0 } });
+        saveDB();
+        
+        alert(`Compte ${user} créé avec succès !`);
+        document.getElementById('new-user').value = '';
+        document.getElementById('new-pass').value = '';
+    }
+
+    function resetUserStats(username) {
+        if(confirm(`Es-tu sûr de vouloir remettre à zéro les stats de ${username} ?`)) {
+            const userIndex = db.users.findIndex(u => u.username === username);
+            db.users[userIndex].stats.sales = 0;
+            db.users[userIndex].stats.commission = 0;
+            saveDB();
+        }
+    }
+
+    function changeUserGrade(username, newGrade) {
+        const userIndex = db.users.findIndex(u => u.username === username);
+        if(userIndex > -1) {
+            db.users[userIndex].grade = newGrade;
+            db.users[userIndex].role = (newGrade === 'Direction' || newGrade === 'Assistant Direction') ? 'admin' : 'user';
+            saveDB();
+        }
+    }
+
+    function renderAdminTable() {
+        const tbody = document.getElementById('employees-table');
+        tbody.innerHTML = '';
+        
+        db.users.forEach(u => {
+            let gradeHtml = u.grade;
+            if (currentUser && u.username !== currentUser.username) {
+                gradeHtml = `<select onchange="changeUserGrade('${u.username}', this.value)" style="margin: 0; padding: 6px; font-size: 13px;">`;
+                gradesList.forEach(g => {
+                    const selected = (g === u.grade) ? "selected" : "";
+                    gradeHtml += `<option value="${g}" ${selected}>${g}</option>`;
+                });
+                gradeHtml += `</select>`;
+            } else {
+                gradeHtml = `<span style="color: var(--text-muted); font-style: italic;">${u.grade} (Vous)</span>`;
+            }
+
+            tbody.innerHTML += `<tr>
+                <td><strong>${u.username}</strong></td>
+                <td>${gradeHtml}</td>
+                <td>${u.stats.sales.toFixed(0)}$</td>
+                <td class="commission-text">${u.stats.commission.toFixed(0)}$</td>
+                <td><button class="btn-small btn-danger" onclick="resetUserStats('${u.username}')">Reset</button></td>
+            </tr>`;
+        });
+    }
+</script>
+
+</body>
+</html>
