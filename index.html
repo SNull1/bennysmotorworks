@@ -240,13 +240,17 @@
     const defaultData = {
         users: [
             { username: "patron", password: "123", role: "admin", grade: "Direction", stats: { sales: 0, commission: 0 } },
-            { username: "employe1", password: "123", role: "user", grade: "Mécano", stats: { sales: 0, commission: 0 } }
         ],
         gradesCommissions: {
-            "Mécano": 0.30,
-            "Chef Mécano": 0.40,
-            "Assistant Direction": 0.50,
-            "Direction": 0.60
+            "En Test": 0.1,
+            "Apprenti d'atelier": 0.2,
+            "Mécanicien d'atelier": 0.3,
+            "Mécanicien Expérimenté": 0.35,
+            "Technicien Atelier": 0.42,
+            "Chef Equipe": 0.45,
+            "Manager": 0.5,
+            "Assistant Direction": 0.60,
+            "Direction": 0.60,
         },
         partners: [
             { name: "LSPD", discount: 10 },
@@ -255,7 +259,7 @@
         ]
     };
 
-    const gradesList = ["Mécano", "Chef Mécano", "Assistant Direction", "Direction"];
+    const gradesList = ["En Test","Apprenti d'atelier","Mécanicien d'atelier","Mécanicien Expérimenté","Technicien Atelier","Chef Equipe","Manager","Assistant Direction","Direction"];
 
     let db = null;
     let currentUser = null;
